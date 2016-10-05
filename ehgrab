@@ -1,0 +1,193 @@
+#! /bin/sh
+
+# displays a usage message to standard err and exit with an exit code of 1
+show_usage()
+{
+    echo "usage: $1 src_url [dest]" 1>&2
+    exit 1
+}
+
+# gets the main image from the current page in high quality, or standard quality if high quality is not accessible.
+download_image()
+{
+    # get URL for the standard quality image
+    URL="$(
+        # get current page's content
+        echo "$CUR_PAGE" |
+        # seperate images onto their own lines
+        sed "s;<img;\n&;g" |
+        sed "s;/>;&\n;g" |
+        # select only lines with images
+        grep "<img" |
+        # select only images with style (only main image is styled)
+        grep "style" |
+        # isolate the image source URL
+        sed "s;.*src=\";;" |
+        sed "s;\".*;;"
+    )"
+
+    # create the path for the file
+    FILE_PATH="$DEST/$(printf "%04d" "$FILE_NUM")$(echo "$URL" | sed "s;.*\.;\.;")"
+
+    # if SKIP_HQ is set or there is no higher quality image available
+    if [ "$SKIP_HQ" -eq 0 -o "$(echo "$CUR_PAGE" | grep "Download original" | wc -l)" -eq 0 ]; then
+        # get the standard quality image
+        curl -s "$URL" > "$FILE_PATH"
+    else
+        # get current page's content
+        echo "$CUR_PAGE" |
+        # seperate links onto their own lines
+        sed "s;<a href;\n&;g" |
+        sed "s;</a>;&\n;g" |
+        # select only lines with links
+        grep "<a href" |
+        # isolate the original file link
+        grep "Download original" |
+        # isolate the link URL
+        sed "s;<a href=\";;" |
+        sed "s;\".*;;" |
+        # get rid of the amp; codes after the ampersands
+        sed "s|amp;||g" |
+        # get the high quality image
+        xargs curl -sL --cookie "ipb_member_id=$EHUSR; ipb_pass_hash=$EHPWD" > "$FILE_PATH"
+    fi
+
+    # iterate the file number
+    let "FILE_NUM += 1"
+}
+
+# sets CUR_PAGE to the next page's content. If on the last page, sets CUR_PAGE to the current page's content (no change)
+get_next_page()
+{
+    CUR_PAGE="$(
+        # get current page's content
+        echo "$CUR_PAGE" |
+        # seperate links onto their own lines
+        sed "s;<a href;\n&;g" |
+        sed "s;</a>;&\n;g" |
+        # select only lines with links
+        grep "<a href" |
+        # isolate links with the "next" image inside
+        grep "n\.png" |
+        # isolate the link URL
+        sed "s;<a href=\";;" |
+        sed "s;\".*;;" |
+        # get only one (link repeats due to nav appearing at the top and bottom)
+        head -1 |
+        # get the next page's content
+        xargs curl -s
+    )"
+}
+
+# returns 0 if the current page is the last page, else returns 1
+is_last_page()
+{
+    PAGE_NUM_CUR_AND_LAST="$(
+        # get current page content
+        echo "$CUR_PAGE" |
+        # seperate spans onto their own lines (spans contain current page number and last page number)
+        sed "s;<span>;\n&;g" |
+        sed "s;</span>;&\n;g" |
+        # select only lines with spans
+        grep "<span>" |
+        # isolate span content (page numbers)
+        sed "s;<span>;;" |
+        sed "s;</span>;;" |
+        # get only first two (both numbers repeat due to nav appearing at the top and bottom)
+        head -2
+    )"
+
+    # get the current page number (first line)
+    PAGE_NUM_CUR="$(echo "$PAGE_NUM_CUR_AND_LAST" | head -1)"
+    # get the last page number (last line)
+    PAGE_NUM_LAST="$(echo "$PAGE_NUM_CUR_AND_LAST" | tail -1)"
+
+    if [ "$PAGE_NUM_CUR" == "$PAGE_NUM_LAST" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+########################################################################################################################
+
+SKIP_HQ=1
+FILE_NUM=0001
+DONE=1
+
+########################################################################################################################
+
+# check for the correct number of arguments
+if [ "$#" -lt 1 -o "$#" -gt 2 ]; then
+    show_usage $0
+fi
+
+# if a destination is provided as an argument, use that as DEST
+if [ "$#" -eq 2 ]; then
+    DEST="$2"
+# else check for a $EHDEST environment variable and use that if available
+elif [ -n "$EHDEST" ]; then
+    DEST="$EHDEST"
+# else no destination was provided; exit with failure code
+else
+    echo "No destination provided and no \$EHDEST environment variable set. Exiting." 1>&2
+    exit 2
+fi
+
+# make destination directory if it doesn't exist
+ls "$DEST" > /dev/null
+if [ $? -ne 0 ]; then
+    mkdir -p "$DEST"
+fi
+
+# normalize destination filepath
+DEST="$(realpath $DEST)"
+
+# check if E-Hentai username and password environment variables are set, and set SKIP_HQ if they are not
+if   [ -z "$EHUSR" -a -n "$EHPWD" ]; then
+    echo "Warning: No E-Hentai user ID set. Both \$EHUSR and \$EHPWD environment variables must be set to download" \
+         "high quality images. High quality images, where available, will not be downloaded. Standard quality will" \
+         "be downloaded instead." 1>&2
+    SKIP_HQ=0
+elif [ -n "$EHUSR" -a -z "$EHPWD" ]; then
+    echo "Warning: No E-Hentai password hash set. Both \$EHUSR and \$EHPWD environment variables must be set to" \
+         "download high quality images. High quality images, where available, will not be downloaded. Standard" \
+         "quality will be downloaded instead." 1>&2
+    SKIP_HQ=0
+elif [ -z "$EHUSR" -a -z "$EHPWD" ]; then
+    echo "Warning: No E-Hentai user ID or password hash set. Both \$EHUSR and \$EHPWD environment variables must be" \
+         "set to download high quality images. High quality images, where available, will not be downloaded. Standard" \
+         "quality will be downloaded instead." 1>&2
+    SKIP_HQ=0
+fi
+
+# get the content of the first page from the gallery page
+CUR_PAGE="$(
+    # get gallery page's content
+    curl -s $1 |
+    # seperate links onto their own lines
+    sed "s;<a href;\n&;g" |
+    sed "s;</a>;&\n;g" |
+    # select only lines with links
+    grep "<a href" |
+    # isolate the first thumbnail
+    grep "alt=\"0*1\"" |
+    # isolate the link URL
+    sed "s;<a href=\";;" |
+    sed "s;\">.*;;" |
+    # get the first page's content
+    xargs curl -s
+)"
+
+while : # infinite loop
+do
+    download_image
+
+    if is_last_page
+        then break
+    fi
+
+    get_next_page
+done
+
+exit 0
