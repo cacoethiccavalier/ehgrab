@@ -135,7 +135,7 @@ else
 fi
 
 # make destination directory if it doesn't exist
-ls "$DEST" > /dev/null
+ls "$DEST" &> /dev/null
 if [ $? -ne 0 ]; then
     mkdir -p "$DEST"
 fi
