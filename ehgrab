@@ -37,14 +37,14 @@ download_image()
         # get current page's content
         echo "$CUR_PAGE" |
         # seperate links onto their own lines
-        sed "s;<a href;\n&;g" |
+        sed "s;<a;\n&;g" |
         sed "s;</a>;&\n;g" |
         # select only lines with links
-        grep "<a href" |
+        grep "<a" |
         # isolate the original file link
         grep "Download original" |
         # isolate the link URL
-        sed "s;<a href=\";;" |
+        sed "s;<a.*href=\";;" |
         sed "s;\".*;;" |
         # get rid of the amp; codes after the ampersands
         sed "s|amp;||g" |
@@ -63,14 +63,14 @@ get_next_page()
         # get current page's content
         echo "$CUR_PAGE" |
         # seperate links onto their own lines
-        sed "s;<a href;\n&;g" |
+        sed "s;<a;\n&;g" |
         sed "s;</a>;&\n;g" |
         # select only lines with links
-        grep "<a href" |
+        grep "<a" |
         # isolate links with the "next" image inside
         grep "n\.png" |
         # isolate the link URL
-        sed "s;<a href=\";;" |
+        sed "s;<a.*href=\";;" |
         sed "s;\".*;;" |
         # get only one (link repeats due to nav appearing at the top and bottom)
         head -1 |
@@ -166,14 +166,14 @@ CUR_PAGE="$(
     # get gallery page's content
     curl -s $1 |
     # seperate links onto their own lines
-    sed "s;<a href;\n&;g" |
+    sed "s;<a;\n&;g" |
     sed "s;</a>;&\n;g" |
     # select only lines with links
-    grep "<a href" |
+    grep "<a" |
     # isolate the first thumbnail
     grep "alt=\"0*1\"" |
     # isolate the link URL
-    sed "s;<a href=\";;" |
+    sed "s;<a.*href=\";;" |
     sed "s;\">.*;;" |
     # get the first page's content
     xargs curl -s
