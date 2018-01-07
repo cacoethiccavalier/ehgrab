@@ -1,0 +1,14 @@
+Version 2.0
+    - Complete rewrite of EHgrab
+    - Added support for command line options:
+        - Specify a configuration file: -c, --config
+        - Enable verbose debug messages: --debug
+        - Display extended help message: -h, --help
+        - Provide password hash: -p, --pass
+        - Silence all output: -q, --quiet
+        - Disable downloading high definition images: --sd
+        - Provide user ID: -u, --user
+        - Zero index file names: -z, --zero
+    - Added support for a configuration file
+    - Added debug messages
+    - Increased stability
