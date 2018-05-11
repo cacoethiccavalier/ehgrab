@@ -1,12 +1,12 @@
 #!/bin/bash
 ########################################################################################################################
 # EHgrab                                                                                                               #
-# Version 2.0.0                                                                                                        #
+# Version 2.1.0                                                                                                        #
 #                                                                                                                      #
 # A shell script for automatically downloading image galleries from E-Hentai (https://e-hentai.org).                   #
 # See README.md for additional details.                                                                                #
 #                                                                                                                      #
-# Copyright 2016-2018 "Cacoethic Cavalier" <code@cacoethiccavalier.com>                                                #
+# Copyright 2016-2018 "Cacoethic Cavalier" <code@cacocav.com>                                                          #
 #                                                                                                                      #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with  #
 # the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0                      #
@@ -20,7 +20,7 @@ usage="Usage: ehgrab [OPTION]... URL [DIR]"
 gethelp="Try 'ehgrab --help' for more information."
 imgnum=1
 
-# error out with usage message if at least one argument isn't provided 
+# error out with usage message if at least one argument isn't provided
 [[ $# -eq 0 ]] && echo -e "$usage\n$gethelp" >&2 && exit 1
 
 # define debug level output
@@ -75,8 +75,9 @@ downloadImage() {
     echo -e "\tGenerated file name: $filename" >&3
 
     # get the image
-    if [[ -z $sd && $(echo "$current_page_content)" | grep "Download original") ]]; then
-        echo -e "\tDownloading of high definition images enabled, and high definition image available:" >&3
+    if [[ $auth_mode && -z $sd && $(echo "$current_page_content)" | grep "Download original") ]]; then
+        echo -e "\tUsing authenticated mode, downloading of high definition images enabled, " \
+                "and high definition image available:" >&3
         echo -e "\tDownloading high definition image" >&3
 
         echo $current_page_content |
@@ -90,7 +91,7 @@ downloadImage() {
         xargs curl -sL --cookie "ipb_member_id=$userid; ipb_pass_hash=$passh" > "$path/$filename"
     else
         echo -e "\tDownloading standard definition image" >&3
-        curl -s $url > "$path/$filename"
+        curl -s --cookie "$cookies" -- $url > "$path/$filename"
     fi
 }
 
@@ -105,10 +106,10 @@ getNextPage() {
         # get only one (multiple links remain due to multiple nav groups)
         head -1
     )
-    current_page_content=$(curl -s $current_page)
+    current_page_content=$(curl -s --cookie "$cookies" -- $current_page)
 }
 
-################################################################################
+########################################################################################################################
 
 # parse arguments
 
@@ -202,6 +203,9 @@ echo >&3
 # error out if no source URL could be parsed
 [[ -z $src ]] && echo "Error: No source URL specified" >&2 && exit 1
 
+# error out if bad source URL was given (not for e-hentai.org or exhentai.org)
+! [[ $src =~ ^(https?://)?e[-x]hentai\.org ]] && echo "Error: Bad source URL: $src" >&2 && exit 1
+
 # use current directory as destination if no destination path could be parsed
 [[ -z $path ]] && path=. && echo "No destination path specified: using current directory as destination" >&3
 
@@ -234,29 +238,44 @@ fi
 
 echo >&3
 
+# check if we'll be in authenticated mode, and inform the user if not
+[[ -n $userid && -n $passh ]] && auth_mode=1 && cookies="ipb_member_id=$userid; ipb_pass_hash=$passh"
+if [[ $auth_mode ]]; then
+    echo "User ID and password hash provided, using authenticated mode" >&3
+    [[ $sd ]] && echo "High quality image downloads disabled: downloading only standard quality images."
+else
+    if [[ $src =~ ^(https?://)?exhentai\.org ]]; then
+        echo "Using unauthenticated mode, cannot download from exhentai.org. See README.md for details." >&2
+        exit 1
+    fi
+    echo "Using unauthenticated mode: downloading only standard quality images. See README.md for details."
+fi
+
+echo >&3
+
 # determine the starting location and get the first image page
 
 echo "Determining the starting location provided in the source URL..." >&3
 
-if [[ $src == *"e-hentai.org/g/"* ]]; then
+if [[ $src =~ \.org/g/ ]]; then
     # we were given a gallery page URL
     echo "Source URL is a gallery page. Extracting first image page..." >&3
     current_page=$(
         # remove URL params to get the first gallery page
         echo $src | sed "s;\?.*;;g" |
         # get first gallery page's content
-        xargs curl -s |
+        xargs curl -s --cookie "$cookies" -- |
         isolateLinks |
         # isolate the first thumbnail (FRAGILE)
         grep "alt=\"0*1\"" |
         isolateURL
     )
-elif [[ $src == *"e-hentai.org/s"* ]]; then
+elif [[ $src =~ \.org/s ]]; then
     # we were given an image page URL
     echo "Source URL is an image page. Extracting first image page..." >&3
     current_page=$(
         # get all links from page
-        curl -s $src |
+        curl -s --cookie "$cookies" -- $src |
         isolateLinks |
         # isolate links with the "first" image inside (FRAGILE)
         grep "f\.png" |
@@ -265,7 +284,8 @@ elif [[ $src == *"e-hentai.org/s"* ]]; then
         head -1
     )
 else
-    echo "Bad source URL" >&2
+    # we were given an e-hentai.org or exhentai.org URL that is not a source URL
+    echo "Bad source URL: $src" >&2
     exit 1
 fi
 echo "First image page: $current_page" >&3
@@ -273,22 +293,7 @@ echo "First image page: $current_page" >&3
 echo >&3
 
 echo "Getting content of first image page..." >&3
-current_page_content=$(curl -s $current_page)
-
-echo >&3
-
-# check if we'll be attempting to get high quality images, and inform the user if not
-[[ -z $userid || -z $passh ]] && sd=1
-if [[ $sd ]]; then
-    if [[ -z $userid || -z $passh ]]; then
-        echo "User ID and/or password hash not provided: downloading only standard quality images"
-    else
-        echo "High quality image downloads disabled: downloading only standard quality images"
-    fi
-else 
-    echo "User ID and password hash provided, and high quality image downloads not disabled: " \
-         "will attempt to download high quality images" >&3
-fi
+current_page_content=$(curl -s --cookie "$cookies" -- $current_page)
 
 echo >&3
 

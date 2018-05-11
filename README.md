@@ -6,7 +6,7 @@ A shell script for automatically downloading image galleries from E-Hentai (http
 - [Usage](https://github.com/cacoethiccavalier/ehgrab#usage)
   - [Basic Usage](https://github.com/cacoethiccavalier/ehgrab#basic-usage)
   - [Command Line Options](https://github.com/cacoethiccavalier/ehgrab#command-line-options)
-  - [Downloading High Definition Images](https://github.com/cacoethiccavalier/ehgrab#downloading-high-definition-images)
+  - [Authenticated Mode](https://github.com/cacoethiccavalier/ehgrab#authenticated-mode)
 - [Configuration](https://github.com/cacoethiccavalier/ehgrab#configuration)
 - [Contributing](https://github.com/cacoethiccavalier/ehgrab#contributing)
 
@@ -62,8 +62,10 @@ The following command line options are currently supported by EHgrab:
 | -u, --user *STRING* | Specifies a string to user as the user ID.                            |           |
 | -z, --zero          | Enables zero-indexed file names.                                    |           |
 
-### Downloading High Definition Images
-By default, for high definition images, EHgrab will download a lower-quality "standard definition" image. This is because E-Hentai requires you to be logged in to get access to high definition images' original files. EHgrab can download these files by authenticating as your user account using a provided user ID and password hash.
+### Authenticated Mode
+By default, EHgrab will work in "unauthenticated mode". That it, it will function as if you are not logged into E-Hentai. E-Hentai requires you to be logged in to get access to high definition images, when they're available, and to access sister site ExHentai (exhentai.org). When operating in unauthenticated mode, EHgrab will download a lower-quality "standard definition" images in place of high definition images, and will be unable to access ExHentai.
+
+EHgrab can download high definition images and access ExHentai by working in "authenticated mode". To use authenticated mode, you must allow EHgrab to authenticate as your user account by providing a user ID and password hash.
 
 #### Acquiring Your E-Hentai Credentials
 To get your user ID and password hash, follow these instructions:
