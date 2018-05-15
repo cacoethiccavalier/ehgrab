@@ -2,13 +2,13 @@
 
 A shell script for automatically downloading image galleries from E-Hentai (https://e-hentai.org).
 
-- [Installation](https://github.com/cacoethiccavalier/ehgrab#installation)
-- [Usage](https://github.com/cacoethiccavalier/ehgrab#usage)
-  - [Basic Usage](https://github.com/cacoethiccavalier/ehgrab#basic-usage)
-  - [Command Line Options](https://github.com/cacoethiccavalier/ehgrab#command-line-options)
-  - [Authenticated Mode](https://github.com/cacoethiccavalier/ehgrab#authenticated-mode)
-- [Configuration](https://github.com/cacoethiccavalier/ehgrab#configuration)
-- [Contributing](https://github.com/cacoethiccavalier/ehgrab#contributing)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Basic Usage](#basic-usage)
+  - [Command Line Options](#command-line-options)
+  - [Authenticated Mode](#authenticated-mode)
+- [Configuration](#configuration)
+- [Contributing](#contributing)
 
 ## Installation
 It is recommended that you install EHgrab on your path by entering the following commands into your preferred terminal:
@@ -30,7 +30,7 @@ It is recommended that you install EHgrab on your path by entering the following
 `[[ $PATH != *"~/bin"* ]] && PATH=$PATH:~/bin && echo PATH=$PATH:~/bin >> ~/.profile`
 
 #### Other Shells
-EHgrab is currently designed to work with Bash. At this time, support for other Unix shells is not tested or supported. If you'd like to help add support for your favorite shell, or make EHgrab more shell-agnostic, please feel free to email me at code@cacoethiccavalier.com, or open a pull request.
+EHgrab is currently designed to work with Bash. At this time, support for other Unix shells is not tested or supported. If you'd like to help add support for your favorite shell, or make EHgrab more shell-agnostic, please feel free to email me at code@cacocav.com, or open a pull request.
 
 #### A Note for Windows Users
 EHgrab is a Unix shell script. As such, it needs to run in a Unix terminal emulator. While Unix terminals are natively available on Mac OS and Linux-based systems, on Windows you will have to download one. There are many available, but I personally use Git Bash, which is installed when you [install Git for Windows.](https://git-scm.com/download/)
@@ -59,7 +59,7 @@ The following command line options are currently supported by EHgrab:
 | -p, --pass *STRING* | Specifies a string to use as the password hash.                     |           |
 | -q, --quiet         | Silences all output, including errors.                              |           |
 | --sd                | Disables downloading of high definition images.                     |           |
-| -u, --user *STRING* | Specifies a string to user as the user ID.                            |           |
+| -u, --user *STRING* | Specifies a string to use as the user ID.                           |           |
 | -z, --zero          | Enables zero-indexed file names.                                    |           |
 
 ### Authenticated Mode

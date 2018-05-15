@@ -1,3 +1,11 @@
+Version 2.1.1
+    - Made minor copy changes to README.md
+    - Fixed a bug that caused a warning message to be displayed any time no
+      configuration file was present, whether or not the user specified one
+    - Fixed a bug that caused all high definition images to have the jpg
+      extension, regardless of their proper extensions
+    - Minor refactoring
+
 Version 2.1.0
     - Added support for downloading from exhentai.org
 
