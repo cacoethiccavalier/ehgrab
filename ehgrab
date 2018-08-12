@@ -1,7 +1,7 @@
 #!/bin/bash
 ########################################################################################################################
 # EHgrab                                                                                                               #
-# Version 2.1.1                                                                                                        #
+# Version 2.2.0                                                                                                        #
 #                                                                                                                      #
 # A shell script for automatically downloading image galleries from E-Hentai (https://e-hentai.org).                   #
 # See README.md for additional details.                                                                                #
@@ -17,11 +17,11 @@
 ########################################################################################################################
 
 usage="Usage: ehgrab [OPTION]... URL [DIR]"
-gethelp="Try 'ehgrab --help' for more information."
+version="EHgrab 2.2.0"
 imgnum=1
 
 # error out with usage message if at least one argument isn't provided
-[[ $# -eq 0 ]] && echo -e "$usage\n$gethelp" >&2 && exit 1
+[[ $# -eq 0 ]] && echo -e "$usage\nTry 'ehgrab --help' for more information." >&2 && exit 1
 
 # define debug level output
 if [[ $@ == *"--debug"* ]]; then
@@ -150,6 +150,7 @@ while [[ $# -gt 0 ]]; do
         ;;
         -h|--help)
             echo "Help flag is set: displaying help and exiting" >&3
+            echo $version
             echo $usage
             echo
             echo "OPTIONS:"
@@ -167,6 +168,8 @@ while [[ $# -gt 0 ]]; do
                    "Download only standard definition images, even if high definition images are available"
             printf "%-17s \t%s\n" "-u, --user STRING" \
                    "Specify a string to use as the user ID"
+            printf "%-17s \t%s\n" "-v, --version" \
+                   "Display version"
             printf "%-17s \t%s\n" "-z, --zero" \
                    "Start file names at 0000.extension (default 0001.extension)"
             exit 0
@@ -193,6 +196,12 @@ while [[ $# -gt 0 ]]; do
             echo "User ID flag is set: setting user ID to $2" >&3
             [[ -n $2 ]] && userid=$2
             shift 2
+        ;;
+        -v|--version)
+            # display version information and exit
+            echo "Displaying version information" >&3
+            echo $version
+            exit 0
         ;;
         -z|--zero)
             # use zero-indexed file numbers

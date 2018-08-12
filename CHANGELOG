@@ -1,3 +1,7 @@
+Version 2.2.0
+    - Added command line options -v and --version to display version information
+    - Minor refactoring and copy change
+
 Version 2.1.1
     - Made minor copy changes to README.md
     - Fixed a bug that caused a warning message to be displayed any time no

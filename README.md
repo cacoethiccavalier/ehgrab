@@ -60,10 +60,11 @@ The following command line options are currently supported by EHgrab:
 | -q, --quiet         | Silences all output, including errors.                              |           |
 | --sd                | Disables downloading of high definition images.                     |           |
 | -u, --user *STRING* | Specifies a string to use as the user ID.                           |           |
+| -v, --version       | Displays EHgrab's current version                                   |           |
 | -z, --zero          | Enables zero-indexed file names.                                    |           |
 
 ### Authenticated Mode
-By default, EHgrab will work in "unauthenticated mode". That it, it will function as if you are not logged into E-Hentai. E-Hentai requires you to be logged in to get access to high definition images, when they're available, and to access sister site ExHentai (exhentai.org). When operating in unauthenticated mode, EHgrab will download a lower-quality "standard definition" images in place of high definition images, and will be unable to access ExHentai.
+By default, EHgrab will work in "unauthenticated mode". That is, it will function as if you are not logged into E-Hentai. E-Hentai requires you to be logged in to get access to high definition images, when they're available, and to access sister site ExHentai (exhentai.org). When operating in unauthenticated mode, EHgrab will download a lower-quality "standard definition" images in place of high definition images, and will be unable to access ExHentai.
 
 EHgrab can download high definition images and access ExHentai by working in "authenticated mode". To use authenticated mode, you must allow EHgrab to authenticate as your user account by providing a user ID and password hash.
 
@@ -105,7 +106,7 @@ EHgrab is a somewhat fragile script that works by making assumptions about E-Hen
 If you have any features you'd like to see added, [open an issue](https://github.com/cacoethiccavalier/ehgrab/issues/new). I can't guarantee I'll be able to add all requested features, but I'm happy to take a look.
 
 #### Contributing Code
-If you'd like to contribute some code, open a pull request or contact me via email at code@cacoethiccavalier.com.
+If you'd like to contribute some code, open a pull request or contact me via email at code@cacocav.com.
 
 Please make sure your code style matches the rest of the script and include comments and debug messages as appropriate.
 
