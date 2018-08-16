@@ -1,3 +1,10 @@
+Version 3.0.0
+    - Changed default behavior:
+        - EHgrab will now skip image downloads if the filename already exists
+    - Added command line options -f and --force
+        - force EHgrab to download files, even if a file with that name exists
+          (this is essentially the same behavior as previous versions)
+
 Version 2.2.0
     - Added command line options -v and --version to display version information
     - Minor refactoring and copy change

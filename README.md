@@ -55,6 +55,7 @@ The following command line options are currently supported by EHgrab:
 |---------------------|---------------------------------------------------------------------|-----------|
 | -c, --config *FILE* | Specifies a path to a file to use as a configuration file.          | ~/.ehgrab |
 | --debug             | Enables verbose output for debugging. Mostly useful for developers. |           |
+| -f, --force         | Downloads files even if a file with that name already exists.       |           |
 | -h, --help          | Displays a help message.                                            |           |
 | -p, --pass *STRING* | Specifies a string to use as the password hash.                     |           |
 | -q, --quiet         | Silences all output, including errors.                              |           |
