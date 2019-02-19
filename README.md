@@ -101,10 +101,10 @@ The following key-value pairs are currently supported in EHgrab configuration fi
 ## Contributing
 
 #### Reporting Bugs
-EHgrab is a somewhat fragile script that works by making assumptions about E-Hentai's page structure. If things change, it will likely break. It would be a big help if you report any bugs you encounter by [opening an issue](https://github.com/cacoethiccavalier/ehgrab/issues/new).
+EHgrab is a somewhat fragile script that works by making assumptions about E-Hentai's page structure. If things change, it will likely break. It would be a big help if you report any bugs you encounter by [opening an issue][issues].
 
 #### Requesting Features
-If you have any features you'd like to see added, [open an issue](https://github.com/cacoethiccavalier/ehgrab/issues/new). I can't guarantee I'll be able to add all requested features, but I'm happy to take a look.
+If you have any features you'd like to see added, [open an issue][issues]. I can't guarantee I'll be able to add all requested features, but I'm happy to take a look.
 
 #### Contributing Code
 If you'd like to contribute some code, open a pull request or contact me via email at code@cacocav.com.
@@ -112,3 +112,5 @@ If you'd like to contribute some code, open a pull request or contact me via ema
 Please make sure your code style matches the rest of the script and include comments and debug messages as appropriate.
 
 If you are trying to debug a problem you are having, you may find the `--debug` flag useful. Also, lines that make assumptions about E-Hentai's page structure have line comments that include the phrase "(FRAGILE)", which may be a good place to start looking for problems.
+
+[issues]: https://gitlab.com/cacocav/ehgrab/issues
